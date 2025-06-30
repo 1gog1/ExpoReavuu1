@@ -22,7 +22,6 @@ export function Header() {
   const isNativeMobile = Platform.OS === "ios" || Platform.OS === "android";
 
   const isMobile = useMemo(() => isMobileView(), []);
-  console.log({ isMobile });
 
   return (
     <Container isMobile={isMobile}>

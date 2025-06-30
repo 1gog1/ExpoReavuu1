@@ -48,7 +48,6 @@ export const JoinText = styled.Text`
 
 export const StyledLink = styled(Pressable)<StyledLinkProps>`
   margin-right: ${({ isLast, isMobile }) => {
-    console.log({ isMobile });
     return isLast ? "0" : isMobile ? "24" : "12px";
   }};
 
