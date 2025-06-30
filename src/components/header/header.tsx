@@ -1,36 +1,31 @@
+import { isMobileView } from "@/src/helpers/layoutHelper";
 import { Link } from "expo-router";
+import { useMemo, useState } from "react";
+import { ActivityIndicator, Image, Platform } from "react-native";
+import burgerIcon from "../../assets/images/burger.png";
+import logoMobile from "../../assets/images/logo (1).png";
+import logo from "../../assets/images/logo.png";
 import {
+  BurgerIconWrapper,
   Container,
   JoinButton,
   JoinText,
-  Nav,
   Logo,
+  Nav,
   StyledLink,
   StyledLinkText,
-  BurgerIconWrapper,
 } from "../header/header.styled";
-import { Dimensions, ActivityIndicator, Image, Platform } from "react-native";
-import { useEffect, useState } from "react";
-import logo from "../../assets/images/logo.png";
-import logoMobile from "../../assets/images/logo (1).png";
-import burgerIcon from "../../assets/images/burger.png";
 
 export function Header() {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const [screenWidth, setScreenWidth] = useState(
-    Dimensions.get("window").width
-  );
+  const isNativeMobile = Platform.OS === "ios" || Platform.OS === "android";
 
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener("change", ({ window }) => {
-      setScreenWidth(window.width);
-    });
-    return () => subscription.remove();
-  }, []);
+  const isMobile = useMemo(() => isMobileView(), []);
+  console.log({ isMobile });
 
   return (
-    <Container>
+    <Container isMobile={isMobile}>
       {!isLoaded && (
         <ActivityIndicator
           size="small"
@@ -39,40 +34,43 @@ export function Header() {
         />
       )}
       <Logo
-        source={Platform.OS === 'web' ? logo : logoMobile}
+        source={isMobile ? logoMobile : logo}
+        isMobile={isMobile}
         resizeMode="contain"
         onLoadEnd={() => setIsLoaded(true)}
       />
 
-      {Platform.OS !== "web" && (
+      {isMobile ? (
         <BurgerIconWrapper onPress={() => alert("Open mobile menu")}>
           <Image source={burgerIcon} style={{ width: 24, height: 24 }} />
         </BurgerIconWrapper>
+      ) : (
+        <Nav>
+          <Link href="./agent-search" asChild>
+            <StyledLink isMobile={isMobile}>
+              <StyledLinkText>Agent Search</StyledLinkText>
+            </StyledLink>
+          </Link>
+
+          <Link href="./how-it-works" asChild>
+            <StyledLink isMobile={isMobile}>
+              <StyledLinkText>How It Works</StyledLinkText>
+            </StyledLink>
+          </Link>
+
+          <Link href="./features" asChild>
+            <StyledLink isLast isMobile={isMobile}>
+              <StyledLinkText>Features</StyledLinkText>
+            </StyledLink>
+          </Link>
+        </Nav>
       )}
 
-      <Nav>
-        <Link href="./agent-search" asChild>
-          <StyledLink screenWidth={screenWidth}>
-            <StyledLinkText>Agent Search</StyledLinkText>
-          </StyledLink>
-        </Link>
-
-        <Link href="./how-it-works" asChild>
-          <StyledLink screenWidth={screenWidth}>
-            <StyledLinkText>How It Works</StyledLinkText>
-          </StyledLink>
-        </Link>
-
-        <Link href="./features" asChild>
-          <StyledLink screenWidth={screenWidth} isLast>
-            <StyledLinkText>Features</StyledLinkText>
-          </StyledLink>
-        </Link>
-      </Nav>
-
-      <JoinButton onPress={() => alert("Join Waitlist!")}>
-        <JoinText>Join Waitlist</JoinText>
-      </JoinButton>
+      {!isNativeMobile && (
+        <JoinButton isMobile={isMobile} onPress={() => alert("Join Waitlist!")}>
+          <JoinText>Join Waitlist</JoinText>
+        </JoinButton>
+      )}
     </Container>
   );
 }
